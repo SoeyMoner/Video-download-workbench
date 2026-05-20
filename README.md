@@ -1,6 +1,6 @@
-# yt-dlp Workbench
+# Video-download-workbench
 
-本地 yt-dlp 图形界面工具，支持代理、Cookie、格式选择、批量下载。
+本地 Video-download-workbench 图形界面工具，根据开源项目yt-dlp开发，支持代理、Cookie、格式选择、批量下载。
 
 ## 依赖
 
