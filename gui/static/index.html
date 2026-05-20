@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>yt-dlp 贵胄工作台</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <div class="top-area">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h1><span class="dot"></span>yt-dlp 贵胄工作台</h1>
+        <div class="version" id="version-display">v---</div>
+      </div>
+      <div class="section">
+        <div class="section-label">下载</div>
+        <textarea id="input-url" placeholder="粘贴视频 / 播放列表链接，每行一个..." rows="3"></textarea>
+        <div class="input-row" style="margin-top:10px">
+          <input type="text" id="input-outdir" placeholder="输出目录">
+          <button class="btn btn-secondary" id="btn-browse" title="浏览" style="flex:0 0 auto;padding:10px 14px">浏览</button>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" style="flex:1;padding:13px 24px;font-size:14px" id="btn-parse">解析</button>
+          <button class="btn btn-secondary" id="btn-download" style="flex:1;padding:13px 24px;font-size:14px;display:none">下载</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">格式</div>
+        <select id="select-preset">
+          <option value="bestvideo+bestaudio/best">最佳视频 + 音频（默认）</option>
+          <option value="bestaudio/best">仅音频</option>
+          <option value="bestvideo/best">仅视频（无音频）</option>
+          <option value="custom">自定义格式字符串...</option>
+        </select>
+        <input type="text" id="input-format-custom" class="hidden" placeholder="例如：137+140 / best[height<=1080]" style="margin-top:10px">
+        <select id="select-resolution" style="margin-top:10px">
+          <option value="">不限分辨率</option>
+          <option value="2160">4K (2160p)</option>
+          <option value="1440">2K (1440p)</option>
+          <option value="1080">1080p</option>
+          <option value="720">720p</option>
+          <option value="480">480p</option>
+          <option value="360">360p</option>
+        </select>
+      </div>
+
+      <div class="collapse" id="collapse-output">
+        <div class="collapse-header" data-collapse="collapse-output">
+          <span class="collapse-title">输出模板</span>
+          <svg class="collapse-arrow" viewBox="0 0 16 16" fill="currentColor"><path d="M6 4l4 4-4 4"/></svg>
+        </div>
+        <div class="collapse-body"><div class="collapse-inner">
+          <select id="select-template-preset">
+            <option value="">自定义...</option>
+            <option value="%(title)s.%(ext)s">%(title)s.%(ext)s</option>
+            <option value="%(title)s-%(id)s.%(ext)s">标题 + ID</option>
+            <option value="%(uploader)s/%(title)s.%(ext)s">上传者 / 标题</option>
+            <option value="%(playlist)s/%(playlist_index)s - %(title)s.%(ext)s">播放列表索引</option>
+            <option value="%(upload_date)s - %(title)s.%(ext)s">日期 - 标题</option>
+          </select>
+          <input type="text" id="input-output-template" placeholder="%(title)s.%(ext)s">
+        </div></div>
+      </div>
+
+      <div class="collapse" id="collapse-subs">
+        <div class="collapse-header" data-collapse="collapse-subs">
+          <span class="collapse-title">字幕</span>
+          <svg class="collapse-arrow" viewBox="0 0 16 16" fill="currentColor"><path d="M6 4l4 4-4 4"/></svg>
+        </div>
+        <div class="collapse-body"><div class="collapse-inner">
+          <label class="check-label"><input type="checkbox" id="chk-write-subs"> 下载字幕</label>
+          <label class="check-label"><input type="checkbox" id="chk-auto-subs"> 包含自动生成字幕</label>
+          <label class="check-label"><input type="checkbox" id="chk-embed-subs"> 嵌入到视频</label>
+          <input type="text" id="input-sub-langs" placeholder="语言（如：en,zh-CN,ja）">
+        </div></div>
+      </div>
+
+      <div class="collapse" id="collapse-playlist">
+        <div class="collapse-header" data-collapse="collapse-playlist">
+          <span class="collapse-title">播放列表</span>
+          <svg class="collapse-arrow" viewBox="0 0 16 16" fill="currentColor"><path d="M6 4l4 4-4 4"/></svg>
+        </div>
+        <div class="collapse-body"><div class="collapse-inner">
+          <div class="input-row"><input type="number" id="input-pl-start" placeholder="起始序号"><input type="number" id="input-pl-end" placeholder="结束序号"></div>
+          <label class="check-label"><input type="checkbox" id="chk-pl-random"> 随机</label>
+          <label class="check-label"><input type="checkbox" id="chk-pl-reverse"> 反序</label>
+        </div></div>
+      </div>
+
+      <div class="collapse" id="collapse-network">
+        <div class="collapse-header" data-collapse="collapse-network">
+          <span class="collapse-title">网络</span>
+          <svg class="collapse-arrow" viewBox="0 0 16 16" fill="currentColor"><path d="M6 4l4 4-4 4"/></svg>
+        </div>
+        <div class="collapse-body"><div class="collapse-inner">
+          <input type="text" id="input-proxy" placeholder="代理（如：socks5://127.0.0.1:1080）">
+          <select id="select-cookies-browser">
+            <option value="">不使用 Cookie</option>
+            <option value="chrome">Chrome</option><option value="firefox">Firefox</option><option value="edge">Edge</option>
+            <option value="brave">Brave</option><option value="opera">Opera</option>
+          </select>
+          <input type="text" id="input-cookies-file" placeholder="或指定 cookies.txt 路径">
+          <input type="text" id="input-rate-limit" placeholder="速率限制（如：10M）">
+          <input type="number" id="input-retries" placeholder="重试次数（默认 10）" min="0" max="100">
+          <input type="number" id="input-concurrent" placeholder="并发分片数" min="1">
+        </div></div>
+      </div>
+
+      <div class="collapse" id="collapse-postproc">
+        <div class="collapse-header" data-collapse="collapse-postproc">
+          <span class="collapse-title">后处理</span>
+          <svg class="collapse-arrow" viewBox="0 0 16 16" fill="currentColor"><path d="M6 4l4 4-4 4"/></svg>
+        </div>
+        <div class="collapse-body"><div class="collapse-inner">
+          <label class="check-label"><input type="checkbox" id="chk-extract-audio"> 提取音频</label>
+          <select id="select-audio-format">
+            <option value="mp3">MP3</option><option value="aac">AAC</option><option value="flac">FLAC</option>
+            <option value="opus">Opus</option><option value="m4a">M4A</option><option value="wav">WAV</option>
+          </select>
+          <select id="select-audio-quality">
+            <option value="">默认音质</option><option value="0">最佳 (0)</option><option value="5">良好 (5)</option><option value="9">较小 (9)</option>
+          </select>
+          <label class="check-label"><input type="checkbox" id="chk-embed-thumb"> 嵌入缩略图</label>
+          <label class="check-label"><input type="checkbox" id="chk-embed-meta"> 嵌入元数据</label>
+          <select id="select-merge-format">
+            <option value="webm">WebM（默认）</option><option value="mp4">MP4</option><option value="mkv">MKV</option>
+          </select>
+        </div></div>
+      </div>
+
+      <div class="collapse" id="collapse-sb">
+        <div class="collapse-header" data-collapse="collapse-sb">
+          <span class="collapse-title">SponsorBlock</span>
+          <svg class="collapse-arrow" viewBox="0 0 16 16" fill="currentColor"><path d="M6 4l4 4-4 4"/></svg>
+        </div>
+        <div class="collapse-body"><div class="collapse-inner">
+          <select id="select-sb-mark">
+            <option value="">标记章节：无</option><option value="all">全部类别</option>
+            <option value="sponsor">仅赞助</option><option value="sponsor,intro,outro,selfpromo">赞助 + 开场/结束/自推</option>
+          </select>
+          <select id="select-sb-remove">
+            <option value="">移除片段：无</option><option value="all">全部类别</option>
+            <option value="sponsor">仅赞助</option><option value="sponsor,intro,outro,selfpromo,interaction">除 filler 外全部</option>
+          </select>
+        </div></div>
+      </div>
+
+      <div class="collapse" id="collapse-filters">
+        <div class="collapse-header" data-collapse="collapse-filters">
+          <span class="collapse-title">筛选 & 认证</span>
+          <svg class="collapse-arrow" viewBox="0 0 16 16" fill="currentColor"><path d="M6 4l4 4-4 4"/></svg>
+        </div>
+        <div class="collapse-body"><div class="collapse-inner">
+          <input type="text" id="input-date-after" placeholder="日期之后 (YYYYMMDD)">
+          <input type="text" id="input-date-before" placeholder="日期之前 (YYYYMMDD)">
+          <div class="input-row"><input type="number" id="input-min-duration" placeholder="最短秒数"><input type="number" id="input-max-duration" placeholder="最长秒数"></div>
+          <input type="text" id="input-max-filesize" placeholder="最大文件大小（如：500M）">
+          <input type="text" id="input-username" placeholder="用户名">
+          <input type="password" id="input-password" placeholder="密码">
+          <label class="check-label"><input type="checkbox" id="chk-ignore-errors"> 忽略错误</label>
+        </div></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="queue-area" id="queue-area">
+        <div class="empty-state" id="empty-state">
+          <div class="empty-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </div>
+          <p>粘贴链接，点击 <strong>解析</strong> 查看视频信息<br>或直接点击 <strong>下载</strong> 开始下载</p>
+        </div>
+      </div>
+
+      <div class="terminal-wrap" id="terminal-wrap">
+        <div class="terminal-bar" id="terminal-bar">
+          <span class="terminal-bar-title"><span class="dot"></span>终端日志</span>
+          <div class="terminal-bar-actions">
+            <button class="btn btn-ghost btn-sm" id="btn-clear-log">清空</button>
+          </div>
+        </div>
+        <div class="terminal-body">
+          <div class="terminal-content" id="terminal-content"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <button class="tweaks-toggle" id="tweaks-toggle" title="调整">&#9881;</button>
+  <div class="tweaks-panel" id="tweaks-panel">
+    <h3>外观调整</h3>
+    <div class="tweak-row">
+      <label>主题色</label>
+      <select id="tweak-accent">
+        <option value="C9A96E">流金</option>
+        <option value="7BA87E">翡翠</option>
+        <option value="D9A06A">赤铜</option>
+        <option value="B08BBD">紫罗兰</option>
+      </select>
+    </div>
+    <div class="tweak-row">
+      <label>终端字号</label>
+      <input type="range" id="tweak-font-size" min="10" max="16" value="11">
+      <span style="font-size:11px;color:var(--text-muted);width:30px" id="tweak-font-val">11px</span>
+    </div>
+    <div class="tweak-row">
+      <label>侧栏宽度</label>
+      <input type="range" id="tweak-sidebar" min="300" max="500" value="360">
+      <span style="font-size:11px;color:var(--text-muted);width:36px" id="tweak-sidebar-val">360px</span>
+    </div>
+    <div class="tweak-row">
+      <label>动画</label>
+      <select id="tweak-anim"><option value="on">开</option><option value="off">关</option></select>
+    </div>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
